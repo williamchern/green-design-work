@@ -44,47 +44,120 @@ module ietf-energy-object-power {
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
      for full legal notices.";
   
-  revision 2025-11-13 {
+  revision 2025-11-27 {
     description
       "Initial revision";
     reference
       "RFC XXXX: Energy Object YANG Data Model";
   }
   
-  typedef measurement-provenance {
-    type enumeration {
-      enum unknown {
-        description
-          "The provenance of the power measurement is unknown.";
-      }
-      enum estimated {
-        description
-          "The power measurement is estimated, perhaps based on a
-           model or calculation rather than a direct measurement.";
-      }
-      enum measured {
-        description
-          "The power measurement is a direct, real-time measurement
-           from a sensor.";
-      }
-      enum unavailable {
-        description
-          "A power measurement is not available for some reason, such
-           as a sensor failure or a component being powered off.";
-      }
-    }
+  identity data-accuracy {
     description
-      "The provenance of the power measurement.";
-    reference
-      "RFC 7460: eoPowerMeasurementCaliber object";
+      "Base identity for all possible data accuracy types.
+       This identity serves as the root for a hierarchy of accuracy
+       types, allowing for extensibility while maintaining alignment
+       with current and future industry standards.
+
+       The hierarchy, as defined in this YANG module, is as follows.
+       Other modules may extend this hierarchy with additional
+       accuracy base- and sub-types as needed.
+
+       data-accuracy
+        ├── accuracy-unknown
+        │    └── accuracy-unavailable
+        ├── accuracy-estimated
+        │    ├── accuracy-static
+        │    ├── accuracy-historic
+        │    ├── accuracy-learned
+        └── accuracy-measured
+             ├── accuracy-measured-bronze
+             ├── accuracy-measured-silver
+             ├── accuracy-measured-gold
+             ├── accuracy-measured-red
+             └── accuracy-measured-ones
+      ";
+  }
+  identity accuracy-unknown {
+    base data-accuracy;
+    description
+      "The accuracy of the power data is unknown.";
+  }
+  identity accuracy-unavailable {
+    base data-accuracy-unknown;
+    description
+      "A power data is not available for some reason, such
+        as a sensor failure or a component being powered off.";
+  }
+  identity accuracy-estimated {
+    base data-accuracy;
+    description
+      "The power data is estimated, perhaps based on a model,
+       history or calculation rather than a direct measurement.";
+  }
+  identity accuracy-static {
+    base accuracy-estimated;
+    description
+      "The power data is based on static data, such as
+       manufacturer specifications, datasheet of typical power values
+       or nameplate ratings, rather than real-time measurements.";
+  }
+  identity accuracy-historic {
+    base accuracy-estimated;
+    description
+      "The power data is based on an historic measurement data
+       for this specific system and usage pattern.";
+  }
+  identity accuracy-learned {
+    base accuracy-estimated;
+    description
+      "The power data is based on an machine learning
+       model prediction.";
+  }
+  identity accuracy-measured {
+    base data-accuracy;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor.";
+  }
+  identity accuracy-measured-bronze {
+    base accuracy-measured;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor with +/- 30% accuracy for typical values.";
+  }
+  identity accuracy-measured-silver {
+    base accuracy-measured;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor with +/- 10% accuracy for typical values.";
+  }  
+  identity accuracy-measured-gold {
+    base accuracy-measured;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor with +/- 5% accuracy for typical values.";
+  }
+  identity accuracy-measured-red {
+    base accuracy-measured;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor with +/- 2% accuracy for typical values.";
+  }
+  identity accuracy-measured-ones {
+    base accuracy-measured;
+    description
+      "The power data is a direct, real-time measurement
+       from a sensor with all non-zero digits valid.";
   }
   
   typedef power-factor {
     type uint8 {
       range "0 .. 100";
     }
+    default 100;
     description
-      "The percent value of the power factor measurement.";
+      "The percent value of the power factor measurement.
+       Leaf often omitted, implying 100%.";
     reference
       "Replaces RFC 7460: eoPowerCurrentType object";
   }
@@ -164,12 +237,12 @@ module ietf-energy-object-power {
       reference
         "RFC 7460: EoPowerEntry";
         
-        leaf object-id {
-          type string;
-          description
-            "An identifier that uniquely identifies the energy object in
-             a device.";
-        }        
+      leaf object-id {
+        type string;
+        description
+          "An identifier that uniquely identifies the energy object in
+           a device.";
+      }        
       
       leaf source-component-id {
         type leafref {
