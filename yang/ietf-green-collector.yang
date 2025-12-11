@@ -120,6 +120,13 @@ module ietf-green-collector {
           description
             "ID of the data source.";
         }
+        leaf ietf-hardware-id {
+          config false;
+          type string;
+          description
+            "Name of the data source as defined in the 
+            ietf-hardware module, if known.";
+        } 
         leaf-list mechanisms {
           type leafref {
             path "../../../mechanisms/mechanism/name";

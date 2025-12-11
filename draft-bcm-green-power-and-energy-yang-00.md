@@ -37,6 +37,10 @@ author:
   fullname: Marisol Palmero
   org: Individual
   email: marisol.ietf@gmail.com
+- ins: J. Lindblad
+  fullname: Jan Lindblad
+  org: All For Eco
+  email: jan.lindblad@for.eco
 
 normative:
 

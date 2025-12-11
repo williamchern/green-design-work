@@ -68,7 +68,7 @@ module ietf-power-and-energy {
         ├── accuracy-estimated
         │    ├── accuracy-static
         │    ├── accuracy-historic
-        │    ├── accuracy-learned
+        │    └── accuracy-learned
         └── accuracy-measured
              ├── accuracy-measured-bronze
              ├── accuracy-measured-silver
@@ -86,7 +86,7 @@ module ietf-power-and-energy {
     base accuracy-unknown;
     description
       "A power data is not available for some reason, such
-        as a sensor failure or a component being powered off.";
+       as a sensor failure or a component being powered off.";
   }
   identity accuracy-estimated {
     base data-source-accuracy;
@@ -192,7 +192,7 @@ module ietf-power-and-energy {
 
   identity multiplier-none {
     description 
-      "Represents a multiplier of 1 (no multiplier) associated with 
+      "Represents a multiplier of 10^0 (1) associated with 
        the integer units used to measure the power or energy.";
     reference
       "RFC 7460: UnitMultiplier";
@@ -325,65 +325,7 @@ module ietf-power-and-energy {
           and for correctly interpreting the power data.";
         reference
           "Replaces RFC 7460: eoPowerCurrentType object";
-      }
-      
-      leaf eo-power-measurement-local {
-        type boolean;
-        config false;
-        description
-          "Indicates whether the power measurement is local (true) or
-           remote (false). A local measurement is taken directly at 
-           the device, while a remote measurement is collected from
-           an external source. This information can be useful for 
-           troubleshooting and understanding the data source.";
-        reference
-          "RFC 7460: eoPowerMeasurementLocal object";
-      }
-      
-      leaf eo-power-admin-state {
-        type identityref {
-          base power-state;
-        }
-        description
-          "The administratively desired power state for the energy 
-          object. This is the power state that a management 
-          application wants the device to be in. The actual 
-          operational state may differ due to automatic power 
-          management, thermal constraints, or other factors. 
-          This leaf is read-write, allowing management applications
-          to control the power state of components.";
-        reference
-          "RFC 7460: eoPowerAdminState object";
-      }
-      
-      leaf eo-power-oper-state {
-        type identityref {
-          base power-state;
-        }
-        config false;
-        description
-          "The current operational power state of the energy object.
-           This is the actual power state that the device is 
-           currently in, which may differ from the administrative 
-           state if, for example, a power-saving feature has 
-           automatically changed the state. This leaf is read-only, 
-           as its value is determined by the device.";
-        reference
-          "RFC 7460: eoPowerOperState object";
-      }
-      
-      leaf eo-power-state-enter-reason {
-        type string;
-        description
-          "A textual description of the reason why the energy object
-           entered its current power state. This information is 
-           valuable for troubleshooting, auditing, and understanding 
-           the behavior of the device's power management features. 
-           Examples include 'user command', 'automatic power-saving',
-            or 'thermal protection activated'.";
-        reference
-          "RFC 7460: eoPowerStateEnterReason object";
-      }
+      }      
     }
   }
 }
