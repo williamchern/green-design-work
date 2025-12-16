@@ -25,7 +25,7 @@ pi: [toc, sortrefs, symrefs, docmapping]
 
 author:
 
-- ins: C. Benoit
+- ins: B. Claise
   fullname: Benoit Claise
   org: Everything OPS
   email: benoit@everything-ops.net
@@ -62,12 +62,19 @@ Monitoring and control of devices within or connected to communication
 networks, for the use cases document in
 {{?I-D.ietf-green-use-cases-00}}.
 
-The data model includes both the monitoring and control of Energy
-Objects for networked devices.
-
 This YANG data model is based on the the "GREEN framework"
 {{?I-D.belmq-green-framework-06}}, following the "GREEN terminology"
 {{!I-D.ietf-green-terminology-00}}.
+
+Power refers to the instantaneous rate at which a device consumes or
+produces electrical energy (typically expressed in Watts). Energy,
+by contrast, represents the cumulative amount of work performed over
+time (typically expressed in Joules or Watt-hours). Both concepts are
+required within the YANG module specified in this document. Power enables
+real-time monitoring, control, and optimization of device operation,
+while Energy provides a time-integrated view necessary for accounting,
+reporting, and even for sustainability analysis. This specification
+includes both Power and Energy attributes.
 
 Power and Energy Monitoring and Control can be applied to devices in
 communication networks. All identifiable devices with measurable or
@@ -100,25 +107,13 @@ This document makes use of the terms defined in
     - Service Level Energy Efficiency (SLEE)
 
 This document makes use of the terms defined in
-{{?I-D.belmq-green-framework-06}}
+{{?I-D.belmq-green-framework-06}}:
 
     - Energy Object
 
 The terms reused from {{!I-D.ietf-green-terminology-00}} and
 {{?I-D.belmq-green-framework-06}} are capitalized in this
 specification.
-
-This document uses the terms Power and Energy in accordance with
-{{!I-D.ietf-green-terminology-00}}. Power refers to the instantaneous
-rate at which a device consumes or produces electrical energy
-(typically expressed in Watts). Energy, by contrast, represents the
-cumulative amount of work performed over time (typically expressed in
-Joules or Watt-hours). Both concepts are required within this YANG
-module. Power enables real-time monitoring, control, and optimization
-of device operation, while Energy provides a time-integrated view
-necessary for accounting, reporting, and even for sustainability
-analysis. This specification includes both Power and Energy
-attributes.
 
 The terminology for describing YANG modules is defined in [RFC7950].
 The meanings of the symbols in the YANG tree diagrams are defined in
@@ -154,15 +149,14 @@ and Energy YANG module. In the ietf-hardware YANG model, there are
 three identifiers for hardware components, which are "name",
 "physical-index" and "uuid". Among them, "name" is the key to "List of
 components", "physical-index" matches entPhysicalIndex in the legacy
-Entity MIB {{?RFC6933}} if it exists, and UUID is the Universally
+Entity MIB {{?RFC6933}}, and UUID is the Universally
 Unified IDentifier {{?RFC4122}} of the component.
 
 In the Power and Energy YANG Module defined in this specification,
-there is a leaf named "source-component-id" which refers to the
-component name in the ietf-hardware model. The "source-component-id"
-can in turn reuse the UUID in the ietf-hardware YANG module.
+the "source-component-id" YANG leaf refers to the component name
+in the ietf-hardware model.
 
-There are also cases where the controllers also generate its own set
+There are also cases where the controllers generate its own set
 of UUIDs for the hardware (components). In such a case, it might be
 necessary to document the mappings between the UUIDs generated on the
 hardware side and the UUIDs on the controller side. Basically, the
@@ -206,7 +200,7 @@ of network devices and the components on these devices.
 
 # Operational Considerations
 
-TO BE COMPLETED
+TO BE COMPLETED ACCORDING TO RFC5706bis
 
 # Security Considerations
 
