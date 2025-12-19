@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 21 June 2026                                             Huawei
+Expires: 22 June 2026                                             Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                        18 December 2025
+                                                        19 December 2025
 
 
                       Power and Energy YANG Module
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 June 2026.
+   This Internet-Draft will expire on 22 June 2026.
 
 Copyright Notice
 
