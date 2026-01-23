@@ -168,7 +168,7 @@ of UUIDs for the hardware (components). In such a case, it might be
 necessary to document the mappings between the UUIDs generated on the
 hardware side and the UUIDs on the controller side. Basically, the
 devices (such as routers) generate the UUID and the controller can
-query it .
+query it.
 
 # Relationship to the EMAN Work
 
