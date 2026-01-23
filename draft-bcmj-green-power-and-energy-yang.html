@@ -1295,7 +1295,7 @@ The meanings of the symbols in the YANG tree diagrams are defined in
 <p id="section-2-1">The "GREEN framework" described in <span>[<a href="#I-D.belmq-green-framework-06" class="cite xref">I-D.belmq-green-framework-06</a>]</span>
 covers monitoring and controlling devices and components where
 monitoring includes measuring Power, Energy, demand and attributes of
-Power.<a href="#section-2-1" class="pilcrow">¶</a></p>
+Power and Energy.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">For the whole picture of the monitoring interfaces and the relevant
 requirements, please refer to "GREEN reference model" in section 4 in
 <span>[<a href="#I-D.belmq-green-framework-06" class="cite xref">I-D.belmq-green-framework-06</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
@@ -2079,7 +2079,19 @@ module ietf-power-and-energy {
       <h2 id="name-operational-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
       </h2>
-<p id="section-7-1">TO BE COMPLETED<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">Heterogeneous sensor capabilities of different components within or
+across devices may demand per-component polling policies and add
+difficulties to power and energy consumption aggregation. Management
+tools must discover each component's data-source-accuracy at runtime to
+avoid alert fatigue or missed faults. Meanwhile, Power and Energy
+consumption sum should prevent double-counting. For example, never
+aggregate both outbound provided power and inbound consumed power.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">YANG Push support eliminates device-side bucket storage by streaming
+power telemetry directly to controller-side via subscriptions.
+Operators must verify the 'yang-push' bundle is enabled and validate
+push-max-operational limits accommodate all component subscriptions,
+preventing notification flooding while avoiding memory overhead on the
+device.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
