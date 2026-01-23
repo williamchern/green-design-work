@@ -196,7 +196,7 @@ Table of Contents
    necessary to document the mappings between the UUIDs generated on the
    hardware side and the UUIDs on the controller side.  Basically, the
    devices (such as routers) generate the UUID and the controller can
-   query it .
+   query it.
 
 5.  Relationship to the EMAN Work
 
@@ -942,9 +942,10 @@ Table of Contents
 10.  Acknowledgments
 
    This work has benefited from the regular discussions on the GREEN
-   Design Meetings.  The authors wish to thank the following
-   individuals, who provided helpful comments and reviews to this
-   document.
+   Design Meetings.  The authors wish to thank the WG chairs, Rob Wilton
+   and Diego Lopez, for organizing the recurring calls and progressing
+   the work.  The authors also wish to thank the following individuals,
+   who provided helpful comments and reviews to this document.
 
 11.  References
 
