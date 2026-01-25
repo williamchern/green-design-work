@@ -1318,9 +1318,9 @@ module: ietf-power-and-energy
         +--ro object-id              string
         +--ro source-component-id?   -&gt; /hw:hardware/component/name
         +--ro power
-        |  +--ro current-power?          int32
+        |  +--ro current-power           int32
         |  +--ro nameplate-power?        uint32
-        |  +--ro unit-multiplier?        identityref
+        |  +--ro unit-multiplier         identityref
         |  +--ro data-source-accuracy?   identityref
         |  +--ro power-factor?           power-factor
         |  +--ro measurement-local?      boolean
@@ -1356,6 +1356,10 @@ necessary to document the mappings between the UUIDs generated on the
 hardware side and the UUIDs on the controller side. Basically, the
 devices (such as routers) generate the UUID and the controller can
 query it.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">The ietf-hardware YANG module <span>[<a href="#RFC8348" class="cite xref">RFC8348</a>]</span> allows to discover all the
+device components, including the containment tree, and the parent/child
+relationship, which is important for energy/power aggregation (see the
+contains-child relationship in RFC 8348).<a href="#section-4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relationship-to-the-eman-work">
@@ -2070,7 +2074,44 @@ module ietf-power-and-energy {
       <h2 id="name-operational-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
       </h2>
-<p id="section-7-1">TO BE COMPLETED<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">Heterogeneous sensor capabilities across components complicate power
+and energy aggregation. Operators must use the data-source-accuracy
+identities (e.g., accuracy-measured-bronze vs. accuracy-estimated) to
+weight data reliability carefully before aggregating Power
+(current-power) and Energy (total-energy-consumed and/or
+total-energy-produced) values to avoid skewing Device-Level Energy
+Efficiency (DLEE) metrics.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">In terms of aggregation, Power and Energy consumption sum should
+prevent double-counting. The sum depends on the energy object, when it
+comes to the PoE port as energy object, let's say that the port consumes
+1 watts, and provides 9 watts to an IP phone, attached via PoE, what
+would operators prefer the energy object to report at the device level?
+do operators sum the total-energy-consumed or total-energy-produced?
+in another word, total-energy-consumed = 1 or 10 Watts? and what should
+the energy object reports at the network level? In case the PoE phone
+can also reports its 9 watts, then at the network level, double-counting
+must be avoided.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">Operators might not always be interested to get the individual component
+accuracy. What counts is the device level or domain level, to meet their
+demands, identity accuracy-like-parent is introduced as follows,
+  identity accuracy-like-parent {
+    base data-source-accuracy;
+    description
+      "The accuracy of the power data is the same as this energy
+       object's parent object. This identity is useful for hierarchical
+       energy objects where child objects inherit the accuracy
+       characteristics.";
+  }
+From an implementation point of view, to facilitate data collection and
+aggregation on runtime and avoid post-aggregation data confidence
+interval issues, operators should use as much as possible this
+accuracy-like-parent identity.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">YANG Push support eliminates device-side bucket storage by streaming
+energy telemetry directly to controller-side via subscriptions.
+Operators must verify the 'yang-push' bundle is enabled and validate
+push-max-operational limits accommodate all component subscriptions,
+preventing notification flooding while avoiding memory overhead on the
+device.<a href="#section-7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
