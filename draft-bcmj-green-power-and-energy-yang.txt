@@ -169,7 +169,7 @@ Table of Contents
            +--ro object-id              string
            +--ro source-component-id?   -> /hw:hardware/component/name
            +--ro power
-           |  +--ro current-power           int32
+           |  +--ro instantaneous-power     int32
            |  +--ro nameplate-power?        uint32
            |  +--ro unit-multiplier         identityref
            |  +--ro data-source-accuracy?   identityref
@@ -917,28 +917,13 @@ Table of Contents
    produced) values to avoid skewing Device-Level Energy Efficiency
    (DLEE) metrics.
 
-   In terms of aggregation, Power and Energy consumption sum should
-   prevent double-counting.  The sum depends on the energy object, when
-   it comes to the PoE port as energy object, let's say that the port
-   consumes 1 watts, and provides 9 watts to an IP phone, attached via
-   PoE, what would operators prefer the energy object to report at the
-   device level? do operators sum the total-energy-consumed or total-
-   energy-produced? in another word, total-energy-consumed = 1 or 10
-   Watts? and what should the energy object reports at the network
-   level?  In case the PoE phone can also reports its 9 watts, then at
-   the network level, double-counting must be avoided.
-
    Operators might not always be interested to get the individual
    component accuracy.  What counts is the device level or domain level,
-   to meet their demands, identity accuracy-like-parent is introduced as
-   follows, identity accuracy-like-parent { base data-source-accuracy;
-   description "The accuracy of the power data is the same as this
-   energy object's parent object.  This identity is useful for
-   hierarchical energy objects where child objects inherit the accuracy
-   characteristics."; } From an implementation point of view, to
-   facilitate data collection and aggregation on runtime and avoid post-
-   aggregation data confidence interval issues, operators should use as
-   much as possible this accuracy-like-parent identity.
+   identity accuracy-like-parent is introduced to meet their demands.
+   From an implementation point of view, to facilitate data collection
+   and aggregation on runtime and avoid post-aggregation data confidence
+   interval issues, operators and implementers should use as much as
+   possible this accuracy-like-parent identity.
 
    YANG Push support eliminates device-side bucket storage by streaming
    energy telemetry directly to controller-side via subscriptions.
