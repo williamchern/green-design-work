@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 30 July 2026                                             Huawei
+Expires: 31 July 2026                                             Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                         26 January 2026
+                                                         27 January 2026
 
 
                       Power and Energy YANG Module
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 July 2026.
+   This Internet-Draft will expire on 31 July 2026.
 
 Copyright Notice
 
@@ -177,7 +177,7 @@ Table of Contents
            |  +--ro measurement-local?      boolean
            +--ro energy
               +--ro total-energy-consumed?   uint64
-              +--ro total-energy-produced?   uint64
+              +--ro total-energy-delivered?  uint64
               +--ro unit-multiplier?         identityref
               +--ro data-source-accuracy?    identityref
               +--ro measurement-local?       boolean
@@ -843,11 +843,11 @@ Table of Contents
                "RFC 7460: eoEnergyConsumed object";
            }
 
-           leaf total-energy-produced {
+           leaf total-energy-delivered {
              type uint64;
              units "Watt-hours";
              description
-               "The total cumulative energy produced by the energy object
+               "The total cumulative energy delivered by the energy object
                since the last reset. This value is specified as
                watt-hours with the magnitude of watt-hours (milliwatt-hours,
                kilowatt-hours, etc.) indicated separately as unit-multiplier
@@ -864,7 +864,7 @@ Table of Contents
              }
              description
                "This multiplier applies to both total-energy-consumed
-                and total-energy-produced values. It determines the scale
+                and total-energy-delivered values. It determines the scale
                 of the energy measurements, allowing representation of
                 energy values from milliwatt-hours to gigawatt-hours
                 using integer arithmetic.";
@@ -914,7 +914,7 @@ Table of Contents
    identities (e.g., accuracy-measured-bronze vs. accuracy-estimated) to
    weight data reliability carefully before aggregating Power
    (instantaneous-power) and Energy (total-energy-consumed and/or total-
-   energy-produced) values to avoid skewing Device-Level Energy
+   energy-delivered) values to avoid skewing Device-Level Energy
    Efficiency (DLEE) metrics.
 
    Operators might not always be interested to get the individual
