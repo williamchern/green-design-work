@@ -217,7 +217,7 @@ and energy aggregation. Operators must use the data-source-accuracy
 identities (e.g., accuracy-measured-bronze vs. accuracy-estimated) to
 weight data reliability carefully before aggregating Power
 (instantaneous-power) and Energy (total-energy-consumed and/or
-total-energy-produced) values to avoid skewing Device-Level Energy
+total-energy-delivered) values to avoid skewing Device-Level Energy
 Efficiency (DLEE) metrics.
 
 Operators might not always be interested to get the individual component
