@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 30 August 2026                                           Huawei
+Expires: 12 October 2026                                          Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                        26 February 2026
+                                                           10 April 2026
 
 
                       Power and Energy YANG Module
@@ -20,12 +20,6 @@ Abstract
 
    This document defines the YANG data model for Power and Energy
    monitoring of devices within or connected to communication networks.
-
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in
-   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
-   capitals, as shown here.
 
 Status of This Memo
 
@@ -42,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 August 2026.
+   This Internet-Draft will expire on 12 October 2026.
 
 Copyright Notice
 
@@ -67,18 +61,24 @@ Table of Contents
    4.  Relationship to the Hardware YANG Data Model
    5.  Relationship to the EMAN Work
    6.  Power and Energy YANG Module
-   7.  Operational Considerations
-     7.1.  Measurement Accuracy and Data Source Classification
-     7.2.  Industry-Standard Certifications
-   8.  Security Considerations
-   9.  IANA Considerations
-   10. Acknowledgments
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+     6.1.  Measurement Accuracy and Data Source Classification
+     6.2.  Industry-Standard Certifications
+   7.  Security Considerations
+   8.  IANA Considerations
+     8.1.  GREEN Certification Type Registry
+   9.  Acknowledgments
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Authors' Addresses
 
 1.  Introduction
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
 
    This document defines a YANG data model for Power and Energy
    Monitoring and control of devices within or connected to
@@ -166,10 +166,10 @@ Table of Contents
    Energy Monitoring is presented.
 
    module: ietf-power-and-energy
-     +--rw energy-objects
-        +--rw energy-entry* [object-id]
-           +--rw object-id              string
-           +--rw source-component-id?   -> /hw:hardware/component/name
+     +--ro energy-objects
+        +--ro energy-entry* [object-id]
+           +--ro object-id              string
+           +--ro source-component-id?   -> /hw:hardware/component/name
            +--ro power
            |  +--ro instantaneous-power     int32
            |  +--ro nameplate-power?        uint32
@@ -184,13 +184,11 @@ Table of Contents
            |  +--ro data-source-accuracy?     identityref
            |  +--ro measurement-local?        boolean
            |  +--ro certifications*           identityref
-           +--rw power-state-control
-           |  +--rw power-admin-state?   identityref
-           |  +--ro power-oper-state?    identityref
-           +--rw relationship* [type]
-              +--rw type     identityref
-              +--rw peers* [id]
-                 +--rw id    string
+           +--ro relationship* [type]
+              +--ro type    identityref
+              +--ro peer* [id]
+                 +--ro id         string
+                 +--ro details?   string
 
 4.  Relationship to the Hardware YANG Data Model
 
@@ -264,6 +262,12 @@ Table of Contents
        prefix hw;
        reference
          "RFC 8348: A YANG Data Model for Hardware Management";
+     }
+
+     import ietf-iana-power-and-energy {
+       prefix ianaeo;
+       reference
+         "IANA-defined identities for power and energy class";
      }
 
      organization
@@ -589,54 +593,14 @@ Table of Contents
          "Replaces RFC 7460: eoPowerCurrentType object";
      }
 
-     identity certification-type {
+     identity power-state {
        description
-         "Base identity for certification types applicable to energy
-          objects. This identity serves as the root for a hierarchy of
-          certification types, allowing for extensibility.";
-
+         "Base identity for all possible power states. This identity
+          serves as the root for a hierarchy of power states, allowing
+          for extensibility while maintaining alignment with the IANA
+          Power State Set Registry.";
        reference
-         "Industry sustainability and energy efficiency certifications";
-     }
-
-     identity energy-star {
-       base certification-type;
-       description
-         "ENERGY STAR certification for energy efficiency.";
-       reference
-         "https://www.energystar.gov/";
-     }
-
-     identity c80-plus {
-       base certification-type;
-       description
-         "80 PLUS Power Supply Certification";
-       reference
-         "https://www.clearesult.com/80plus/";
-     }
-
-     identity epeat {
-       base certification-type;
-       description
-         "Electronic Product Environmental Assessment Tool ratings (Bronze/Silver/Gold).";
-       reference
-         "https://www.epeat.net/";
-     }
-
-     identity eu-energy-level{
-       base certification-type;
-       description
-         "EU Energy Label: European efficiency ratings";
-       reference
-         "https://eprel.ec.europa.eu/screen/home";
-     }
-
-     identity cqc {
-       base certification-type;
-       description
-         "China Quality Certification for energy efficiency";
-       reference
-         "https://www.cqc.com.cn/";
+         "IANA: Power State Set Registry";
      }
 
      identity unit-multiplier {
@@ -782,120 +746,8 @@ Table of Contents
        description "Energy Object A is aggregating Energy Object B";
      }
 
-     identity power-state-set {
-       description
-         "Base identity for Power State Sets as defined in RFC 7460.
-          Each set represents a distinct power management standard.";
-       reference "RFC 7460: IANAPowerStateSet-MIB";
-     }
-
-     identity power-state {
-       description
-         "Base identity for all possible power states. This identity
-          serves as the root for a hierarchy of power states, allowing
-          for extensibility while maintaining alignment with the IANA
-          Power State Set Registry.";
-       reference
-         "IANA: Power State Set Registry";
-     }
-
-     identity eman {
-       base power-state-set;
-       description
-         "EMAN Power State Set - designed for network equipment energy
-          management.";
-       reference "RFC 7460";
-     }
-
-     identity eman-mech-off {
-       base eman;
-       base power-state;
-       description
-         "Mechanical Off - Near zero power, manual intervention required.";
-     }
-
-     identity eman-soft-off {
-       base eman;
-       base power-state;
-       description
-         "Soft Off - Powered down, remote wake capable.";
-     }
-
-     identity eman-hibernate {
-       base eman;
-       base power-state;
-       description
-         "Hibernate - State saved to disk, memory powered down.";
-     }
-
-     identity eman-sleep {
-       base eman;
-       base power-state;
-       description
-         "Sleep - Low power with fast wake.";
-     }
-
-     identity eman-standby {
-       base eman;
-       base power-state;
-       description
-         "Standby - Minimal power to maintain context.";
-     }
-
-     identity eman-ready {
-       base eman;
-       base power-state;
-       description
-         "Ready - Initialized, not actively processing.";
-     }
-
-     identity eman-low-minus {
-       base eman;
-       base power-state;
-       description "Low Minus performance.";
-     }
-
-     identity eman-low {
-       base eman;
-       base power-state;
-       description "Low performance.";
-     }
-
-     identity eman-medium-minus {
-       base eman;
-       base power-state;
-       description "Medium Minus performance.";
-     }
-
-     identity eman-medium {
-       base eman;
-       base power-state;
-       description "Medium performance.";
-     }
-
-     identity eman-high-minus {
-       base eman;
-       base power-state;
-       description "High Minus performance.";
-     }
-
-     identity eman-high {
-       base eman;
-       base power-state;
-       description "High performance.";
-     }
-
-     identity other {
-       base power-state-set;
-       description "Non-standard Power State Set.";
-     }
-
-     identity unknown {
-       base power-state;
-       description "Unknown Power State. RFC 7460 value 255.";
-     }
-
      container energy-objects {
+       config false;
        description
          "Energy objects container for power and energy attributes.";
        reference
@@ -929,7 +781,6 @@ Table of Contents
          }
 
          container power {
-           config false;
            description
              "Container for power measurement attributes.";
            reference
@@ -1019,9 +870,7 @@ Table of Contents
                 "RFC 7460: eoPowerMeasurementLocal object";
            }
          }
-
          container energy {
-           config false;
            description
              "Container for energy measurement attributes.";
            reference
@@ -1102,45 +951,13 @@ Table of Contents
            }
            leaf-list certifications {
              type identityref {
-               base certification-type;
+               base ianaeo:certification-type;
              }
              description
                "List of certifications applicable to this energy object. If
                this list is empty, the energy object has no certifications.";
            }
          }
-
-         container power-state-control {
-           description
-             "Power state administration and operational status.";
-           reference "RFC 7460: eoPowerEntry power state objects";
-
-           leaf power-admin-state {
-             type identityref {
-               base power-state;
-             }
-             config true;
-             description
-               "Desired Power State.
-                Write to this leaf to request a power state transition.
-                The actual transition is asynchronous; oper-state reflects
-                current status.";
-             reference "RFC 7460: eoPowerAdminState";
-           }
-
-           leaf power-oper-state {
-             type identityref {
-               base power-state;
-             }
-             config false;
-             description
-               "Current operational Power State.
-                May differ from admin-state during transitions or if
-                the requested state is not achievable.";
-             reference "RFC 7460: eoPowerOperState";
-           }
-         }
-
          list relationship {
            key "type";
            description "Relationships for this energy entry. Replaces
@@ -1160,7 +977,7 @@ Table of Contents
                "RFC 7461: eoRelationship, IANAEnergyRelationship";
            }
 
-           list peers {
+           list peer {
              key "id";
              description "Multiple peers for this relationship type.";
              reference
@@ -1168,15 +985,21 @@ Table of Contents
 
              leaf id {
                type string;
-               description "This string specifies the name of the remote
-                 powering/powered/metering/metered/... system. It can be
-                 a serial number, asset tag, or any other identifier that
-                 uniquely identifies the peer system. The specific format
-                 and semantics of this identifier are outside the scope of
-                 this YANG module and are determined by the implementation
-                 and use case.";
+               description "This id specifies the Universally Unique
+                 Identifier (UUID) of the peer (other) Energy Object that
+                 this energy object is powering/powered-by/metering/
+                 metered-by, etc. If the network level UUID is not known,
+                 some other locally unique identifier MAY be used, in
+                 conjunction with a human readable details.";
                reference
                  "RFC 7461: eoRelationID (UUIDorZero)";
+             }
+             leaf details {
+               type string;
+               description
+                 "Human-readable details of the peer relationship.
+                  Useful when network level UUID of the peer is not
+                  known.";
              }
            }
          }
@@ -1185,7 +1008,122 @@ Table of Contents
    }
    <CODE ENDS>
 
-7.  Operational Considerations
+   The IANA requested identities for power and energy class are
+   separately described below.
+
+   <CODE BEGINS>
+   module ietf-iana-power-and-energy {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-iana-power-and-energy";
+     prefix ianaeo;
+
+     organization "IANA";
+     contact
+       "        Internet Assigned Numbers Authority
+
+        Postal: ICANN
+                12025 Waterfront Drive, Suite 300
+                Los Angeles, CA  90094-2536
+                United States of America
+
+        Tel:    +1 310 301 5800
+        E-Mail: iana@iana.org>";
+
+     description
+       "IANA-defined identities for power and energy class.
+
+        The latest revision of this YANG module can be obtained from
+        the IANA website.
+
+        Requests for new values should be made to IANA via
+        email (iana@iana.org).
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code.  All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject
+        to the license terms contained in, the Simplified BSD License
+        set forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        The initial version of this YANG module is part of RFC XXX;
+        see the RFC itself for full legal notices.";
+     reference
+       "https://www.iana.org/assignments/yang-parameters";
+
+     revision 2026-02-26 {
+       description
+         "Initial revision.";
+       reference
+         "RFC XXX: A YANG Data Model for Power and Energy monitoring and
+        control of devices within or connected to communication
+        networks";
+     }
+
+     identity certification-type {
+       description
+         "Base identity for certification types applicable to energy
+          objects. This identity serves as the root for a hierarchy of
+          certification types, allowing for extensibility.";
+
+       reference
+         "Industry sustainability and energy efficiency certifications";
+     }
+
+     identity energy-star {
+       base certification-type;
+       description
+         "ENERGY STAR certification for energy efficiency.";
+       reference
+         "https://www.energystar.gov/";
+     }
+
+     identity c80-plus{
+       base certification-type;
+       description
+         "80 PLUS Power Supply Certification";
+       reference
+         "https://www.clearesult.com/80plus/";
+     }
+
+     identity epeat {
+       base certification-type;
+       description
+         "Electronic Product Environmental Assessment Tool ratings (Bronze/Silver/Gold).";
+       reference
+         "https://www.epeat.net/";
+     }
+
+     identity eu-energy-level{
+       base certification-type;
+       description
+         "EU Energy Label: European efficiency ratings";
+       reference
+         "https://eprel.ec.europa.eu/screen/home";
+     }
+
+     identity cn-energy-level{
+       base certification-type;
+       description
+         "CN Energy Label: China efficiency ratings";
+       reference
+         "https://www.energylabel.com.cn";
+     }
+
+     identity cqc{
+       base certification-type;
+       description
+         "China Quality Certification for energy efficiency";
+       reference
+         "https://www.cqc.com.cn/";
+     }
+
+   }
+   <CODE ENDS>
+
+   # Operational Considerations
 
    Heterogeneous sensor capabilities across components complicate power
    and energy aggregation.  Operators must use the data-source-accuracy
@@ -1210,7 +1148,7 @@ Table of Contents
    preventing notification flooding while avoiding memory overhead on
    the device.
 
-7.1.  Measurement Accuracy and Data Source Classification
+6.1.  Measurement Accuracy and Data Source Classification
 
    Power and energy metrics may originate from a wide range of sources
    and estimation methods, each with different levels of reliability.
@@ -1300,7 +1238,7 @@ Table of Contents
    allowing vendors to define manufacturer-specific accuracy classes
    while maintaining interoperability through standardized base types.
 
-7.2.  Industry-Standard Certifications
+6.2.  Industry-Standard Certifications
 
    Energy efficiency certifications issued by recognized testing
    organizations provide standardized benchmarks for the expected
@@ -1322,6 +1260,8 @@ Table of Contents
       (Bronze/Silver/Gold)
 
    *  EU Energy Label: European efficiency ratings
+
+   *  CN Energy Label: China efficiency ratings
 
    *  CQC: China Quality Certification for energy efficiency
 
@@ -1366,14 +1306,14 @@ Table of Contents
    PSU, is designed to be efficient; the measurement accuracy tells them
    how precisely they can monitor its actual performance.
 
-8.  Security Considerations
+7.  Security Considerations
 
    This section will be completed once the YANG module is complete,
    according to https://wiki.ietf.org/group/ops/yang-security-
    guidelines.
 
    This section is modeled after the template described in Section 3.7.1
-   of [RFC-to-be draft-ietf-netmod-rfc8407bis].
+   of [rfc8407bis].
 
    The Power and Energy YANG module defines a data model that is
    designed to be accessed via YANG-based management protocols, such as
@@ -1387,15 +1327,94 @@ Table of Contents
    RESTCONF users to a preconfigured subset of all available NETCONF or
    RESTCONF protocol operations and content.
 
-9.  IANA Considerations
+8.  IANA Considerations
 
-   This document requests IANA to register the YANG module "ietf-power-
-   energy-monitoring".
+   This document requests IANA to create and maintain a new registry
+   group called "Power and Energy", with the following module
+   registration:
+
+   +=========+========================================================+
+   |Field    | Value                                                  |
+   +=========+========================================================+
+   |Name     | ietf-iana-power-and-energy                             |
+   +---------+--------------------------------------------------------+
+   |Namespace| urn:ietf:params:xml:ns:yang:ietf-iana-power-and-energy |
+   +---------+--------------------------------------------------------+
+   |Prefix   | ianaeo                                                 |
+   +---------+--------------------------------------------------------+
+   |Reference| RFC XXXX                                               |
+   +---------+--------------------------------------------------------+
+
+                                 Table 1
 
    Note to IANA: RFC XXXX must be replaced by the newly assigned RFC
    number.
 
-10.  Acknowledgments
+   All sub-registries defined in this document are part of the "Power
+   and Energy" registry group.
+
+8.1.  GREEN Certification Type Registry
+
+   This document requests IANA to create a new sub-registry called
+   "Power and Energy Certification Types" within the "Power and Energy"
+   registry group.
+
+   This document defines the initial version of the IANA-maintained
+   certification-type identity in the ietf-iana-power-and-energy YANG
+   module.  The registry assigns string identity names for power and
+   energy efficiency certification types, for use as identityref values
+   in "ietf-power-and-energy" YANG module.  The registered value is the
+   unqualified identity name (e.g., energy-star, c80-plus, etc).  No
+   numeric code points are assigned by this registry.
+
+   New entries to "Power and Energy Certification Types" registry
+   require Expert Review [RFC8126].  The Designated Expert(s) should
+   verify that:
+
+   *  The certification is issued by a recognized and independent
+      standards body, testing laboratory, regulatory authority, or
+      equivalent organization.
+
+   *  The certification has a stable, publicly accessible reference.
+
+   *  The proposed identity name SHOULD be a short mnemonic derived from
+      the official certification name.
+
+   When a new certification type is added to the registry, a new
+   identity statement MUST be added to the ietf-iana-power-and-energy
+   YANG module.  The following substatements to the identity statement
+   MUST be defined:
+
+   *  base: MUST contain the value certification-type.
+
+   *  status: Include only if a registration has been deprecated (use
+      the value deprecated) or obsoleted (use the value obsolete).
+
+   *  description: MUST include the full name of the certification
+      program and a brief description of its energy efficiency scope.
+      Lines MUST NOT exceed 72 characters.
+
+   *  reference: MUST include a stable URI to the certification
+      program's official documentation or registry.
+
+   Unassigned or reserved values MUST NOT be present in the module.
+
+   When the "Power and Energy Certification Types" registry is updated
+   with a new entry, a corresponding new identity statement MUST be
+   added to the ietf-iana-power-and-energy YANG module, and a new
+   revision statement MUST be added in front of the existing revision
+   statements.
+
+   IANA is requested to add the following note to the "Power and Energy
+   Certification Types" registry:
+
+   Certification types MUST NOT be directly added to the ietf-iana-
+   power-and-energy YANG module.  They MUST instead be added to the
+   "Power and Energy Certification Types" registry.  When this registry
+   is updated, the ietf-iana-power-and-energy YANG module MUST be
+   updated as defined in RFC XXXX.
+
+9.  Acknowledgments
 
    This work has benefited from the regular discussions on the GREEN
    Design Meetings.  The authors wish to thank the WG chairs, Rob Wilton
@@ -1403,9 +1422,9 @@ Table of Contents
    the work.  The authors also wish to thank the following individuals,
    who provided helpful comments and reviews to this document.
 
-11.  References
+10.  References
 
-11.1.  Normative References
+10.1.  Normative References
 
    [I-D.ietf-green-terminology-00]
               Chen, G., Boucadair, M., Wu, Q., Contreras, L. M., and M.
@@ -1420,21 +1439,51 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC4252]  "The Secure Shell (SSH) Authentication Protocol", January
+              2006, <https://datatracker.ietf.org/doc/html/rfc4252>.
+
+   [RFC6241]  "Network Configuration Protocol (NETCONF)", June 2011,
+              <https://datatracker.ietf.org/doc/html/rfc6241>.
+
    [RFC7460]  Chandramouli, M., Claise, B., Schoening, B., Quittek, J.,
               and T. Dietz, "Monitoring and Control MIB for Power and
               Energy", RFC 7460, DOI 10.17487/RFC7460, March 2015,
               <https://www.rfc-editor.org/rfc/rfc7460>.
 
+   [RFC7950]  "The YANG 1.1 Data Modeling Language", August 2016,
+              <https://datatracker.ietf.org/doc/html/rfc7950>.
+
+   [RFC8040]  "RESTCONF Protocol", June 2017,
+              <https://datatracker.ietf.org/doc/html/rfc8040>.
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8340]  "YANG Tree Diagrams", March 2018,
+              <https://datatracker.ietf.org/doc/html/rfc8340>.
+
+   [RFC8341]  "Network Configuration Access Control Model", March 2018,
+              <https://datatracker.ietf.org/doc/html/rfc8341>.
 
    [RFC8348]  Bierman, A., Bjorklund, M., Dong, J., and D. Romascanu, "A
               YANG Data Model for Hardware Management", RFC 8348,
               DOI 10.17487/RFC8348, March 2018,
               <https://www.rfc-editor.org/rfc/rfc8348>.
 
-11.2.  Informative References
+   [RFC8446]  "The Transport Layer Security (TLS) Protocol Version 1.3",
+              August 2018,
+              <https://datatracker.ietf.org/doc/html/rfc8446>.
+
+   [RFC9000]  "QUIC - A UDP-Based Multiplexed and Secure Transport", May
+              2021, <https://datatracker.ietf.org/doc/html/rfc9000>.
+
+10.2.  Informative References
 
    [I-D.belmq-green-framework-06]
               Claise, B., Contreras, L. M., Lindblad, J., Palmero, M.
@@ -1461,6 +1510,14 @@ Table of Contents
               Chandramouli, "Entity MIB (Version 4)", RFC 6933,
               DOI 10.17487/RFC6933, May 2013,
               <https://www.rfc-editor.org/rfc/rfc6933>.
+
+   [rfc8407bis]
+              Bierman, A., Boucadair, M., and Q. Wu, "Guidelines for
+              Authors and Reviewers of Documents Containing YANG Data
+              Models", Work in Progress, Internet-Draft, draft-ietf-
+              netmod-rfc8407bis-28, 5 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-netmod-
+              rfc8407bis-28>.
 
 Authors' Addresses
 
