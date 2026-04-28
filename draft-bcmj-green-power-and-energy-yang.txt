@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 12 October 2026                                          Huawei
+Expires: 30 October 2026                                          Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                           10 April 2026
+                                                           28 April 2026
 
 
                       Power and Energy YANG Module
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 October 2026.
+   This Internet-Draft will expire on 30 October 2026.
 
 Copyright Notice
 
@@ -166,10 +166,10 @@ Table of Contents
    Energy Monitoring is presented.
 
    module: ietf-power-and-energy
-     +--ro energy-objects
-        +--ro energy-entry* [object-id]
-           +--ro object-id              string
-           +--ro source-component-id?   -> /hw:hardware/component/name
+     +--rw energy-objects
+        +--rw energy-entry* [object-id]
+           +--rw object-id              string
+           +--rw source-component-id?   -> /hw:hardware/component/name
            +--ro power
            |  +--ro instantaneous-power     int32
            |  +--ro nameplate-power?        uint32
@@ -177,6 +177,10 @@ Table of Contents
            |  +--ro data-source-accuracy?   identityref
            |  +--ro power-factor?           power-factor
            |  +--ro measurement-local?      boolean
+           +--rw power-state
+           |  +--rw power-state-admin?    identityref
+           |  +--ro power-state-oper?     identityref
+           |  +--rw state-enter-reason?   identityref
            +--ro energy
            |  +--ro total-energy-consumed?    uint64
            |  +--ro total-energy-delivered?   uint64
@@ -602,7 +606,35 @@ Table of Contents
        reference
          "IANA: Power State Set Registry";
      }
-
+     identity power-state-admin {
+       base power-state;
+       description
+         "Base identity for administratively requested power states. The
+          administrative power state indicates the desired power state
+          requested for the Energy Object by a management system.";
+       reference
+         "RFC 7460: Section 5.3 (Power State)";
+     }
+     identity power-state-oper {
+       base power-state;
+       description
+         "Base identity for operational power states. The operational
+          power state indicates the actual current power state of the
+          Energy Object. A difference between the administrative state
+          and the operational state indicates that the Energy Object is
+          transitioning between power states.";
+       reference
+         "RFC 7460: Section 5.3 (Power State)";
+     }
+     identity power-state-enter-reason {
+       description
+         "Base identity for reasons why an Energy Object entered its
+          current operational power state. This is analogous to the
+          enumeration values defined for eoPowerStateEnterReason
+          in RFC 7460.";
+       reference
+         "RFC 7460: eoPowerStateEnterReason";
+     }
      identity unit-multiplier {
        description
          "Base identity for unit multipliers as defined in IEC 61850-7-3
@@ -747,7 +779,6 @@ Table of Contents
      }
 
      container energy-objects {
-       config false;
        description
          "Energy objects container for power and energy attributes.";
        reference
@@ -781,6 +812,7 @@ Table of Contents
          }
 
          container power {
+           config false;
            description
              "Container for power measurement attributes.";
            reference
@@ -870,7 +902,47 @@ Table of Contents
                 "RFC 7460: eoPowerMeasurementLocal object";
            }
          }
+
+         container power-state {
+           description
+             "Container for Power state management and monitoring.";
+           leaf power-state-admin {
+             type identityref {
+               base power-state-admin;
+             }
+             description
+               "The administratively requested power state for the
+                Energy Object. This is the state that the management
+                system desires the energy object to be in.";
+             reference
+               "RFC 7460: eoPowerAdminState";
+           }
+           leaf power-state-oper {
+             type identityref {
+               base power-state-oper;
+             }
+             config false;
+             description
+               "The actual operational power state of the Energy Object.
+                This reflects the current state, which may differ from the
+                admin-state during transitions.";
+             reference
+               "RFC 7460: eoPowerOperState";
+           }
+           leaf state-enter-reason {
+             type identityref {
+               base power-state-enter-reason;
+             }
+             description
+               "The reason why the Energy Object entered its current
+                operational power state. This is set whenever the
+                power-state-oper changes.";
+             reference
+               "RFC 7460: eoPowerStateEnterReason";
+           }
+         }
          container energy {
+           config false;
            description
              "Container for energy measurement attributes.";
            reference
@@ -959,6 +1031,7 @@ Table of Contents
            }
          }
          list relationship {
+           config false;
            key "type";
            description "Relationships for this energy entry. Replaces
            RFC 7461 eoRelationTable.";
