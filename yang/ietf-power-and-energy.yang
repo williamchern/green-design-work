@@ -348,7 +348,35 @@ module ietf-power-and-energy {
     reference
       "IANA: Power State Set Registry";
   }
-
+  identity power-state-admin {
+    base power-state;
+    description
+      "Base identity for administratively requested power states. The 
+       administrative power state indicates the desired power state 
+       requested for the Energy Object by a management system.";
+    reference
+      "RFC 7460: Section 5.3 (Power State)";
+  }
+  identity power-state-oper {
+    base power-state;
+    description
+      "Base identity for operational power states. The operational 
+       power state indicates the actual current power state of the 
+       Energy Object. A difference between the administrative state 
+       and the operational state indicates that the Energy Object is 
+       transitioning between power states.";
+    reference
+      "RFC 7460: Section 5.3 (Power State)";
+  }
+  identity power-state-enter-reason {
+    description
+      "Base identity for reasons why an Energy Object entered its 
+       current operational power state. This is analogous to the 
+       enumeration values defined for eoPowerStateEnterReason 
+       in RFC 7460.";
+    reference
+      "RFC 7460: eoPowerStateEnterReason";
+  }
   identity unit-multiplier {
     description 
       "Base identity for unit multipliers as defined in IEC 61850-7-3
@@ -493,7 +521,6 @@ module ietf-power-and-energy {
   }
 
   container energy-objects {
-    config false;
     description
       "Energy objects container for power and energy attributes.";
     reference
@@ -513,7 +540,7 @@ module ietf-power-and-energy {
         description
           "An identifier that uniquely identifies the energy object 
           in an energy object.";
-      }        
+      }
       
       leaf source-component-id {
         type leafref {
@@ -527,6 +554,7 @@ module ietf-power-and-energy {
       }
 
       container power {
+        config false;
         description
           "Container for power measurement attributes.";
         reference
@@ -616,7 +644,47 @@ module ietf-power-and-energy {
              "RFC 7460: eoPowerMeasurementLocal object";
         }
       }
+
+      container power-state {
+        description
+          "Container for Power state management and monitoring.";
+        leaf power-state-admin {
+          type identityref {
+            base power-state-admin;
+          }
+          description
+            "The administratively requested power state for the 
+             Energy Object. This is the state that the management 
+             system desires the energy object to be in.";
+          reference
+            "RFC 7460: eoPowerAdminState";
+        }
+        leaf power-state-oper {
+          type identityref {
+            base power-state-oper;
+          }
+          config false;
+          description
+            "The actual operational power state of the Energy Object.
+             This reflects the current state, which may differ from the
+             admin-state during transitions.";
+          reference
+            "RFC 7460: eoPowerOperState";
+        }
+        leaf state-enter-reason {
+          type identityref {
+            base power-state-enter-reason;
+          }
+          description
+            "The reason why the Energy Object entered its current 
+             operational power state. This is set whenever the 
+             power-state-oper changes.";
+          reference
+            "RFC 7460: eoPowerStateEnterReason";
+        }
+      }
       container energy {
+        config false;
         description
           "Container for energy measurement attributes.";
         reference
@@ -705,6 +773,7 @@ module ietf-power-and-energy {
         }    
       }
       list relationship {
+        config false;
         key "type";
         description "Relationships for this energy entry. Replaces 
         RFC 7461 eoRelationTable.";
