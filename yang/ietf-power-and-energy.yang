@@ -822,10 +822,12 @@ module ietf-power-and-energy {
       reference
         "RFC 7460: eoPowerEntry";
       leaf object-id {
-        type leafref {
-          path "/energy-objects/energy-entry/object-id";
+        type string;
+        description "Must match an existing energy-object object-id.";
+        must "/energy-objects/energy-entry[object-id=current()]" {
+          error-message "The referenced object-id does not exist in 
+                         energy-objects.";
         }
-        description "Reference to the monitored energy object.";
       }
       container power-state {
         description
@@ -840,18 +842,6 @@ module ietf-power-and-energy {
              system desires the energy object to be in.";
           reference
             "RFC 7460: eoPowerAdminState";
-        }
-        leaf power-state-oper {
-          type identityref {
-            base power-state-oper;
-          }
-          config false;
-          description
-            "The actual operational power state of the Energy Object.
-             This reflects the current state, which may differ from the
-             admin-state during transitions.";
-          reference
-            "RFC 7460: eoPowerOperState";
         }
         leaf state-enter-reason {
           type identityref {
