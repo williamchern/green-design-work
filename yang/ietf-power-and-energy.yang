@@ -389,6 +389,12 @@ module ietf-power-and-energy {
     reference
       "RFC 7460: PowerStateSet";
   }
+  identity power-state-low-power {
+    base power-state;
+    description "low-power state.";
+    reference
+      "RFC 7460: PowerStateSet";
+  }
   identity unit-multiplier {
     description 
       "Base identity for unit multipliers as defined in IEC 61850-7-3
@@ -755,7 +761,11 @@ module ietf-power-and-energy {
           description
             "The actual operational power state of the Energy Object.
              This reflects the current state, which may differ from the
-             admin-state during transitions.";
+             admin-state during transitions. This leaf is the 
+             operational counterpart of the administratively set 
+             'power-state-admin' in /energy-control/energy-entry. The 
+             two leaves together form the complete power state 
+             management interface.";
           reference
             "RFC 7460: eoPowerOperState";
         }
@@ -839,7 +849,11 @@ module ietf-power-and-energy {
           description
             "The administratively requested power state for the 
              Energy Object. This is the state that the management 
-             system desires the energy object to be in.";
+             system desires the energy object to be in. This leaf is 
+             the administrative counterpart of the operational set 
+             'power-state-oper' in /energy-objects/energy-entry. The 
+             two leaves together form the complete power state 
+             management interface.";
           reference
             "RFC 7460: eoPowerAdminState";
         }
