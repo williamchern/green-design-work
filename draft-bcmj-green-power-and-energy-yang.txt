@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 30 October 2026                                          Huawei
+Expires: 26 November 2026                                         Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                           28 April 2026
+                                                             25 May 2026
 
 
                       Power and Energy YANG Module
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 October 2026.
+   This Internet-Draft will expire on 26 November 2026.
 
 Copyright Notice
 
@@ -166,33 +166,37 @@ Table of Contents
    Energy Monitoring is presented.
 
    module: ietf-power-and-energy
-     +--rw energy-objects
+     +--ro energy-objects
+     |  +--ro energy-entry* [object-id]
+     |     +--ro object-id              string
+     |     +--ro source-component-id?   -> /hw:hardware/component/name
+     |     +--ro power
+     |     |  +--ro instantaneous-power     int32
+     |     |  +--ro nameplate-power?        uint32
+     |     |  +--ro unit-multiplier         identityref
+     |     |  +--ro data-source-accuracy?   identityref
+     |     |  +--ro power-factor?           power-factor
+     |     |  +--ro measurement-local?      boolean
+     |     +--ro energy
+     |     |  +--ro total-energy-consumed?    uint64
+     |     |  +--ro total-energy-delivered?   uint64
+     |     |  +--ro unit-multiplier?          identityref
+     |     |  +--ro data-source-accuracy?     identityref
+     |     |  +--ro measurement-local?        boolean
+     |     |  +--ro certifications*           identityref
+     |     +--ro power-state
+     |     |  +--ro power-state-oper?   identityref
+     |     +--ro relationship* [type]
+     |        +--ro type    identityref
+     |        +--ro peer* [id]
+     |           +--ro id         string
+     |           +--ro details?   string
+     +--rw energy-control
         +--rw energy-entry* [object-id]
-           +--rw object-id              string
-           +--rw source-component-id?   -> /hw:hardware/component/name
-           +--ro power
-           |  +--ro instantaneous-power     int32
-           |  +--ro nameplate-power?        uint32
-           |  +--ro unit-multiplier         identityref
-           |  +--ro data-source-accuracy?   identityref
-           |  +--ro power-factor?           power-factor
-           |  +--ro measurement-local?      boolean
+           +--rw object-id      string
            +--rw power-state
-           |  +--rw power-state-admin?    identityref
-           |  +--ro power-state-oper?     identityref
-           |  +--rw state-enter-reason?   identityref
-           +--ro energy
-           |  +--ro total-energy-consumed?    uint64
-           |  +--ro total-energy-delivered?   uint64
-           |  +--ro unit-multiplier?          identityref
-           |  +--ro data-source-accuracy?     identityref
-           |  +--ro measurement-local?        boolean
-           |  +--ro certifications*           identityref
-           +--ro relationship* [type]
-              +--ro type    identityref
-              +--ro peer* [id]
-                 +--ro id         string
-                 +--ro details?   string
+              +--rw power-state-admin?    identityref
+              +--rw state-enter-reason?   identityref
 
 4.  Relationship to the Hardware YANG Data Model
 
@@ -635,6 +639,24 @@ Table of Contents
        reference
          "RFC 7460: eoPowerStateEnterReason";
      }
+     identity power-state-on {
+       base power-state;
+       description "full power on.";
+       reference
+         "RFC 7460: PowerStateSet";
+     }
+     identity power-state-off {
+       base power-state;
+       description "power off.";
+       reference
+         "RFC 7460: PowerStateSet";
+     }
+     identity power-state-low-power {
+       base power-state;
+       description "low-power state.";
+       reference
+         "RFC 7460: PowerStateSet";
+     }
      identity unit-multiplier {
        description
          "Base identity for unit multipliers as defined in IEC 61850-7-3
@@ -779,10 +801,11 @@ Table of Contents
      }
 
      container energy-objects {
+       config false;
        description
          "Energy objects container for power and energy attributes.";
        reference
-         "RFC 7460: eoPowerTable";
+         "RFC 7460: eoPowerTable, eoEnergyTable";
 
        list energy-entry {
          key "object-id";
@@ -791,7 +814,7 @@ Table of Contents
             Each entry contains the complete set of power and energy attributes
             for a specific physical component.";
          reference
-           "RFC 7460: EoPowerEntry";
+           "RFC 7460: eoPowerEntry, eoEnergyTable";
 
          leaf object-id {
            type string;
@@ -812,7 +835,6 @@ Table of Contents
          }
 
          container power {
-           config false;
            description
              "Container for power measurement attributes.";
            reference
@@ -903,46 +925,7 @@ Table of Contents
            }
          }
 
-         container power-state {
-           description
-             "Container for Power state management and monitoring.";
-           leaf power-state-admin {
-             type identityref {
-               base power-state-admin;
-             }
-             description
-               "The administratively requested power state for the
-                Energy Object. This is the state that the management
-                system desires the energy object to be in.";
-             reference
-               "RFC 7460: eoPowerAdminState";
-           }
-           leaf power-state-oper {
-             type identityref {
-               base power-state-oper;
-             }
-             config false;
-             description
-               "The actual operational power state of the Energy Object.
-                This reflects the current state, which may differ from the
-                admin-state during transitions.";
-             reference
-               "RFC 7460: eoPowerOperState";
-           }
-           leaf state-enter-reason {
-             type identityref {
-               base power-state-enter-reason;
-             }
-             description
-               "The reason why the Energy Object entered its current
-                operational power state. This is set whenever the
-                power-state-oper changes.";
-             reference
-               "RFC 7460: eoPowerStateEnterReason";
-           }
-         }
          container energy {
-           config false;
            description
              "Container for energy measurement attributes.";
            reference
@@ -1030,6 +1013,26 @@ Table of Contents
                this list is empty, the energy object has no certifications.";
            }
          }
+         container power-state {
+           description
+             "Container for Power state monitoring.";
+           leaf power-state-oper {
+             type identityref {
+               base power-state-oper;
+             }
+             description
+               "The actual operational power state of the Energy Object.
+                This reflects the current state, which may differ from the
+                admin-state during transitions. This leaf is the
+                operational counterpart of the administratively set
+                'power-state-admin' in /energy-control/energy-entry. The
+                two leaves together form the complete power state
+                management interface.";
+             reference
+               "RFC 7460: eoPowerOperState";
+           }
+         }
+
          list relationship {
            config false;
            key "type";
@@ -1074,6 +1077,58 @@ Table of Contents
                   Useful when network level UUID of the peer is not
                   known.";
              }
+           }
+         }
+       }
+     }
+
+     container energy-control {
+       description
+         "Energy control configuration, mirroring monitored objects.";
+       reference
+         "RFC 7460: eoPowerTable";
+       list energy-entry {
+         key "object-id";
+         description
+           "Control entry for a specific energy object.";
+         reference
+           "RFC 7460: eoPowerEntry";
+         leaf object-id {
+           type string;
+           description "Must match an existing energy-object object-id.";
+           must "/energy-objects/energy-entry[object-id=current()]" {
+             error-message "The referenced object-id does not exist in
+                            energy-objects.";
+           }
+         }
+         container power-state {
+           description
+             "Container for Power state management and monitoring.";
+           leaf power-state-admin {
+             type identityref {
+               base power-state-admin;
+             }
+             description
+               "The administratively requested power state for the
+                Energy Object. This is the state that the management
+                system desires the energy object to be in. This leaf is
+                the administrative counterpart of the operational set
+                'power-state-oper' in /energy-objects/energy-entry. The
+                two leaves together form the complete power state
+                management interface.";
+             reference
+               "RFC 7460: eoPowerAdminState";
+           }
+           leaf state-enter-reason {
+             type identityref {
+               base power-state-enter-reason;
+             }
+             description
+               "The reason why the Energy Object entered its current
+                operational power state. This is set whenever the
+                power-state-oper changes.";
+             reference
+               "RFC 7460: eoPowerStateEnterReason";
            }
          }
        }
