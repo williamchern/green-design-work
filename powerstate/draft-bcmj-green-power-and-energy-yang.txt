@@ -641,13 +641,6 @@ Table of Contents
           and the operational state indicates that the Energy Object is
           transitioning between power states.";
      }
-     identity power-state-enter-reason {
-       description
-         "Base identity for reasons why an Energy Object entered its
-          current operational power state. This is analogous to the
-          enumeration values defined for eoPowerStateEnterReason
-          in RFC 7460.";
-     }
      identity power-state-on {
        base power-state;
        description "full power on.";
@@ -1097,9 +1090,7 @@ Table of Contents
            }
 
            leaf state-enter-reason {
-             type identityref {
-               base power-state-enter-reason;
-             }
+             type string;
              description
                "The reason why the Energy Object entered its current
                 operational power state. This is set whenever the
