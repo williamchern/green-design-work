@@ -5,12 +5,12 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 28 November 2026                                         Huawei
+Expires: 13 December 2026                                         Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                             27 May 2026
+                                                            11 June 2026
 
 
                       Power and Energy YANG Module
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 November 2026.
+   This Internet-Draft will expire on 13 December 2026.
 
 Copyright Notice
 
@@ -274,7 +274,7 @@ Table of Contents
    This YANG Module is used to monitor and control Power and Energy
    usage of network devices and the components on these devices.
 
-   <CODE BEGINS>
+   <CODE BEGINS> file "ietf-power-and-energy@2026-05-27.yang"
    module ietf-power-and-energy {
      yang-version 1.1;
 
@@ -321,6 +321,15 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
         for full legal notices.";
 
+     revision 2026-05-27 {
+       description
+         "state-enter-reason identity removed; adding leafref from config tree
+          instance to oper tree instance; remove references to EMAN and
+          clarify it in the framework draft; comment in the draft on NMDA
+          design.";
+       reference
+         "RFC XXXX: Energy Object YANG Data Model";
+     }
      revision 2026-01-22 {
        description
          "Initial revision";
@@ -1096,7 +1105,7 @@ Table of Contents
    The IANA requested identities for power and energy class are
    separately described below.
 
-   <CODE BEGINS>
+   <CODE BEGINS> file "iana-ietf-power-and-energy@2026-05-27.yang"
    module iana-ietf-power-and-energy {
      yang-version 1.1;
      namespace "urn:ietf:params:xml:ns:yang:iana-ietf-power-and-energy";
@@ -1138,13 +1147,21 @@ Table of Contents
      reference
        "https://www.iana.org/assignments/yang-parameters";
 
+     revision 2026-05-27 {
+       description
+         "Marisol's update following IANA feedback;";
+       reference
+         "RFC XXX: A YANG Data Model for Power and Energy monitoring and
+          control of devices within or connected to communication
+          networks";
+     }
      revision 2026-02-26 {
        description
          "Initial revision.";
        reference
          "RFC XXX: A YANG Data Model for Power and Energy monitoring and
-        control of devices within or connected to communication
-        networks";
+          control of devices within or connected to communication
+          networks";
      }
 
      identity certification-type {
@@ -1541,10 +1558,7 @@ Table of Contents
    [RFC8040]  "RESTCONF Protocol", June 2017,
               <https://datatracker.ietf.org/doc/html/rfc8040>.
 
-   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
-              Writing an IANA Considerations Section in RFCs", BCP 26,
-              RFC 8126, DOI 10.17487/RFC8126, June 2017,
-              <https://www.rfc-editor.org/rfc/rfc8126>.
+   [RFC8126]  "*** BROKEN REFERENCE ***".
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
