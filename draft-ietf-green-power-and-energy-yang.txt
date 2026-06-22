@@ -5,16 +5,16 @@
 GREEN                                                          C. Benoit
 Internet-Draft                                            Everything OPS
 Intended status: Standards Track                                  C. Gen
-Expires: 13 December 2026                                         Huawei
+Expires: 24 December 2026                                         Huawei
                                                               M. Palmero
                                                               Individual
                                                              J. Lindblad
                                                              All For Eco
-                                                            11 June 2026
+                                                            22 June 2026
 
 
                       Power and Energy YANG Module
-             draft-bcmj-green-power-and-energy-yang-latest
+             draft-ietf-green-power-and-energy-yang-latest
 
 Abstract
 
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 December 2026.
+   This Internet-Draft will expire on 24 December 2026.
 
 Copyright Notice
 
@@ -204,7 +204,7 @@ Table of Contents
      |     +--ro relationship* [type]
      |        +--ro type    identityref
      |        +--ro peer* [id]
-     |           +--ro id         string
+     |           +--ro id         yang:uuid
      |           +--ro details?   string
      +--rw energy-control
         +--rw energy-entry* [object-id]
@@ -221,7 +221,7 @@ Table of Contents
    index" and "uuid".  Among them, "name" is the key to "List of
    components", "physical-index" matches entPhysicalIndex in the legacy
    Entity MIB [RFC6933] if it exists, and UUID is the Universally
-   Unified IDentifier [RFC4122] of the component.
+   Unified IDentifier [RFC9562] of the component.
 
    In the Power and Energy YANG Module defined in this specification,
    there is a leaf named "source-component-id" which refers to the
@@ -287,6 +287,12 @@ Table of Contents
          "RFC 8348: A YANG Data Model for Hardware Management";
      }
 
+     import ietf-yang-types {
+       prefix yang;
+       reference
+         "RFC 9911: Common YANG Data Types";
+     }
+
      import iana-ietf-power-and-energy {
        prefix ianaeo;
        reference
@@ -304,15 +310,20 @@ Table of Contents
 
      description
        "This YANG module specifies for Power and Energy monitoring and
-        control of devices within or connected to communication
-        networks.
+        control of devices within or connected to communication networks.
 
-        Copyright (c) 2025 IETF Trust and the persons identified as
-        authors of the code. All rights reserved.
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+        NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+        'MAY', and 'OPTIONAL' in this document are to be interpreted as
+        described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+        they appear in all capitals, as shown here.
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code.  All rights reserved.
 
         Redistribution and use in source and binary forms, with or
         without modification, is permitted pursuant to, and subject to
-        the license terms contained in, the Simplified BSD License set
+        the license terms contained in, the Revised BSD License set
         forth in Section 4.c of the IETF Trust's Legal Provisions
         Relating to IETF Documents
         (https://trustee.ietf.org/license-info).
@@ -1030,20 +1041,14 @@ Table of Contents
              description "Multiple peers for this relationship type.";
 
              leaf id {
-               type string;
-               description "This id specifies the Universally Unique
-                 Identifier (UUID) of the peer (other) Energy Object that
-                 this energy object is powering/powered-by/metering/
-                 metered-by, etc. If the network level UUID is not known,
-                 some other locally unique identifier MAY be used, in
-                 conjunction with a human readable details.";
+               type yang:uuid;
+               description "The UUID of the peer energy entry, as defined
+                            in RFC 9562.";
              }
              leaf details {
                type string;
                description
-                 "Human-readable details of the peer relationship.
-                  Useful when network level UUID of the peer is not
-                  known.";
+                 "Additional details about the relationship.";
              }
            }
          }
@@ -1132,18 +1137,22 @@ Table of Contents
         Requests for new values should be made to IANA via
         email (iana@iana.org).
 
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+        NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+        'MAY', and 'OPTIONAL' in this document are to be interpreted as
+        described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+        they appear in all capitals, as shown here.
+
         Copyright (c) 2026 IETF Trust and the persons identified as
         authors of the code.  All rights reserved.
 
         Redistribution and use in source and binary forms, with or
-        without modification, is permitted pursuant to, and subject
-        to the license terms contained in, the Simplified BSD License
-        set forth in Section 4.c of the IETF Trust's Legal Provisions
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Revised BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
         Relating to IETF Documents
-        (https://trustee.ietf.org/license-info).
+        (https://trustee.ietf.org/license-info).";
 
-        The initial version of this YANG module is part of RFC XXX;
-        see the RFC itself for full legal notices.";
      reference
        "https://www.iana.org/assignments/yang-parameters";
 
@@ -1558,7 +1567,10 @@ Table of Contents
    [RFC8040]  "RESTCONF Protocol", June 2017,
               <https://datatracker.ietf.org/doc/html/rfc8040>.
 
-   [RFC8126]  "*** BROKEN REFERENCE ***".
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -1600,11 +1612,6 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-green-
               use-cases-00>.
 
-   [RFC4122]  Leach, P., Mealling, M., and R. Salz, "A Universally
-              Unique IDentifier (UUID) URN Namespace", RFC 4122,
-              DOI 10.17487/RFC4122, July 2005,
-              <https://www.rfc-editor.org/rfc/rfc4122>.
-
    [RFC6933]  Bierman, A., Romascanu, D., Quittek, J., and M.
               Chandramouli, "Entity MIB (Version 4)", RFC 6933,
               DOI 10.17487/RFC6933, May 2013,
@@ -1617,6 +1624,10 @@ Table of Contents
               netmod-rfc8407bis-28, 5 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-netmod-
               rfc8407bis-28>.
+
+   [RFC9562]  Davis, K., Peabody, B., and P. Leach, "Universally Unique
+              IDentifiers (UUIDs)", RFC 9562, DOI 10.17487/RFC9562, May
+              2024, <https://www.rfc-editor.org/rfc/rfc9562>.
 
 Authors' Addresses
 
