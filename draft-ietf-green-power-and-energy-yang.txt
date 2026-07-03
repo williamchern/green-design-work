@@ -181,6 +181,43 @@ Table of Contents
    Finally, note that the instance is in the configuration tree, having
    a required-instance false leafref to operational tree instance.
 
+   The relationship list models the relationship between an Energy
+   Object and its peer Energy Objects, using the energy-relationship-
+   type identities: powered-by and powering (Power Source Relationship),
+   metered-by and metering (Metering Relationship), and aggregated-by
+   and aggregating (Aggregation Relationship).  Each pair of identities
+   expresses the same relationship from the perspective of each
+   participant (e.g., if Energy Object A is powered-by Energy Object B,
+   then Energy Object B is powering Energy Object A).  These three
+   relationship categories, including their use for power/metering
+   topology discovery and for preventing double-counting of Energy
+   values, are defined in [I-D.ietf-green-framework-01].  For each
+   relationship type, one or more peer Energy Objects can be identified
+   via the id leaf within the peer list, a string value that is
+   typically the peer's UUID when known, or another locally unique
+   identifier, together with human-readable details captured in the
+   details leaf, otherwise.
+
+   Regarding relationships among Energy Objects, this document does not
+   provide a mechanism to configure relationships on the device (i.e.,
+   there is no relationship list under /energy-control); the
+   relationship list under /energy-objects/energy-entry is read-only
+   operational data (config false).
+
+   For relationships between components within the same device (e.g.,
+   between a Line Processing Unit (LPU) and a Switch Fabric Unit (SFU)),
+   the device can typically determine and populate this data directly,
+   without requiring external configuration.
+
+   Relationships between Energy Objects located on different devices are
+   generally established and maintained at the controller or Energy
+   Management System (EnMS) level, which has visibility into the broader
+   network topology, as discussed in [I-D.ietf-green-framework-01].  A
+   device may still report a known inter-device relationship (e.g.,
+   using the peer's network-level UUID) when it has been made aware of
+   it, but this module does not provide a mechanism to configure such
+   relationships on the device itself.
+
    module: ietf-power-and-energy
      +--ro energy-objects
      |  +--ro energy-entry* [object-id]
@@ -275,7 +312,7 @@ Table of Contents
    This YANG Module is used to monitor and control Power and Energy
    usage of network devices and the components on these devices.
 
-   <CODE BEGINS> file "ietf-power-and-energy@2026-07-02.yang"
+   <CODE BEGINS> file "ietf-power-and-energy@2026-01-22.yang"
    module ietf-power-and-energy {
      yang-version 1.1;
 
@@ -327,7 +364,7 @@ Table of Contents
         (https://www.rfc-editor.org/info/rfcXXX); see the RFC itself
         for full legal notices.";
 
-     revision 2026-07-02 {
+     revision 2026-01-22 {
        description
          "Initial revision";
        reference
@@ -845,11 +882,10 @@ Table of Contents
              path "/hw:hardware/hw:component/hw:name";
            }
            description
-             "RFC 8348 defines the ietf-hardware YANG module. This leaf
-              references the 'name' leaf of a component within that module.
-              It establishes a direct semantic link between the
-              power/energy attributes and the physical component they
-              describe.";
+             "Reference to the component name in the ietf-hardware
+             model. This leaf creates a direct semantic link between the
+             power/energy attributes and the physical component they describe.
+             ";
          }
 
          container power {
@@ -1027,8 +1063,8 @@ Table of Contents
          list relationship {
            key "type";
            config false;
-           description
-             "Relationships for this energy entry.";
+           description "Relationships for this energy entry. Replaces
+           RFC 7461 eoRelationTable.";
 
            leaf type {
              type identityref {
@@ -1046,20 +1082,17 @@ Table of Contents
 
              leaf id {
                type string;
-               description
-                 "This id specifies the Universally Unique Identifier
-                  (UUID) of the peer (other) Energy Object that this
-                  energy object is powering/powered-by/metering/metered-by,
-                  etc. The UUID format and generation algorithms are
-                  defined in RFC 9562. If the network level UUID is not
-                  known, some other locally unique identifier MAY be used,
-                  in conjunction with human readable details.";
+               description "This id specifies the Universally Unique
+                 Identifier (UUID) of the peer (other) Energy Object that
+                 this energy object is powering/powered-by/metering/
+                 metered-by, etc. If the network level UUID is not known,
+                 some other locally unique identifier MAY be used, in
+                 conjunction with human readable details.";
              }
              leaf details {
                type string;
                description
-                 "Additional human readable details about the
-                  relationship.";
+                 "Additional details about the relationship.";
              }
            }
          }
@@ -1121,7 +1154,7 @@ Table of Contents
    The IANA-requested identities for power and energy class are
    separately described below.
 
-   <CODE BEGINS> file "iana-power-and-energy@2026-07-02.yang"
+   <CODE BEGINS> file "iana-power-and-energy@2026-02-26.yang"
    module iana-ietf-power-and-energy {
      yang-version 1.1;
      namespace "urn:ietf:params:xml:ns:yang:iana-ietf-power-and-energy";
@@ -1167,7 +1200,7 @@ Table of Contents
      reference
        "https://www.iana.org/assignments/yang-parameters";
 
-     revision 2026-07-02 {
+     revision 2026-02-26 {
        description
          "Initial revision.";
        reference
@@ -1422,10 +1455,6 @@ Table of Contents
 
 8.  Security Considerations
 
-   This section will be completed once the YANG module is complete,
-   according to https://wiki.ietf.org/group/ops/yang-security-
-   guidelines.
-
    This section is modeled after the template described in Section 3.7.1
    of [rfc8407bis].
 
@@ -1440,6 +1469,49 @@ Table of Contents
    provides the means to restrict access for particular NETCONF or
    RESTCONF users to a preconfigured subset of all available NETCONF or
    RESTCONF protocol operations and content.
+
+   There is one writable data node defined in this YANG module that may
+   be considered sensitive or vulnerable in some network environments.
+   Write operations (e.g., edit-config) to this data node without proper
+   protection can have a negative effect on network operations:
+
+   *  /energy-control/energy-entry/power-state/power-state-admin:
+      Unauthorized write access to this leaf allows an attacker to
+      change the administratively requested power state of an Energy
+      Object.  Depending on the target device or component, this could
+      be used to power down critical network infrastructure (resulting
+      in denial of service), force a component into a state that damages
+      hardware, or mask an ongoing attack by cycling power states to
+      disrupt monitoring.  Access to this data node SHOULD be limited to
+      authorized administrators via NACM.
+
+   Some of the readable data nodes in this YANG module may be considered
+   sensitive or vulnerable in some network environments.  It is thus
+   important to control read access (e.g., via get, get-config, or
+   notification) to these data nodes.  Specifically, the following
+   subtrees and data nodes have particular sensitivities:
+
+   *  /energy-objects/energy-entry/power and /energy-objects/energy-
+      entry/energy: These subtrees expose real-time and cumulative power
+      and energy consumption for individual hardware components.  Fine-
+      grained, time-correlated power/energy telemetry can reveal
+      operational patterns, such as workload levels, traffic volume, or
+      usage schedules, of a device or of the network behind it.  In some
+      environments, this information could be leveraged as a side
+      channel to infer sensitive operational or business information
+      (e.g., data center utilization, capacity, or customer activity
+      patterns).
+
+   *  /energy-objects/energy-entry/relationship: This list exposes
+      relationships (e.g., powered-by, powering, metered-by) and UUIDs
+      between Energy Objects, which can reveal the physical and logical
+      power topology of a site.  Disclosure of this information could
+      assist an attacker in identifying high-value targets (e.g., shared
+      power infrastructure whose disruption has a broad impact) or in
+      correlating Energy Objects across administrative domains.
+
+   This document does not define any RPC operations or YANG
+   notifications.
 
 9.  IANA Considerations
 
