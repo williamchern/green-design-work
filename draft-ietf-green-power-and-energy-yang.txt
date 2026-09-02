@@ -255,8 +255,8 @@ Table of Contents
            +--rw energy-object* [id]
               +--rw id             -> /energy-objects/energy-object/id
               +--rw power-state
-                 +--rw oper?    -> /energy-objects/energy-object/power-state/oper
                  +--rw admin?   identityref
+                 +--rw oper?    -> /energy-objects/energy-object/power-state/oper
 
 4.  Relationship to the Hardware YANG Data Model
 
@@ -1071,11 +1071,9 @@ Table of Contents
                base power-state;
              }
              description
-               "The current operational power state of this component,
-                as reported by the device. This leaf reflects the
-                actual measured state.
-                When oper differs from admin, a transition toward the
-                admin state is in progress.";
+               "The current operational Power State of this Component,
+                as reported by the device. The leaf reflects the actual
+                observed Power State.";
            }
          }
 
@@ -1153,6 +1151,20 @@ Table of Contents
              description
                "Container for Power state management.";
 
+             leaf admin {
+               type identityref {
+                 base power-state;
+               }
+               description
+                 "The administratively requested Power State for this
+                  Component. This leaf represents the management system
+                  intended Power State. When the 'admin' and the
+                  respective 'oper' YANG leaf values differ, a
+                  transition toward the 'admin' power state is in
+                  progress. Absence of a configured value indicates that
+                  the Component operates at its default Power State.";
+             }
+
              leaf oper {
                type leafref {
                  path "/energy-objects/energy-object/power-state/oper";
@@ -1161,20 +1173,6 @@ Table of Contents
                description
                  "References the corresponding operational energy object
                   instance in the monitoring tree.";
-             }
-
-             leaf admin {
-               type identityref {
-                 base power-state;
-               }
-               description
-                 "The administratively requested power state for this
-                  component. This leaf represents the operator's
-                  intended target state. When admin and oper differ,
-                  a transition is in progress.
-                  Absence of a configured value indicates no
-                  administrative preference; the component operates
-                  at its default state.";
              }
            }
          }
