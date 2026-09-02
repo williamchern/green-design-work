@@ -1049,11 +1049,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">GREEN-PEM-YANG</td>
-<td class="right">August 2026</td>
+<td class="right">September 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benoit, et al.</td>
-<td class="center">Expires 4 March 2027</td>
+<td class="center">Expires 6 March 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg {
 <dd class="internet-draft">draft-ietf-green-power-and-energy-yang-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-08-31" class="published">31 August 2026</time>
+<time datetime="2026-09-02" class="published">2 September 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-03-04">4 March 2027</time></dd>
+<dd class="expires"><time datetime="2027-03-06">6 March 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ monitoring of devices within or connected to communication networks.<a href="#se
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2225,14 +2225,11 @@ module ietf-power-and-energy {
             base power-state;
           }
           description
-            "The actual operational power state of the Energy Object.
-             This reflects the current state, which may differ from
-             the admin-state during transitions. This leaf is the
-             operational counterpart of the administratively set
-             'admin' in
-             /energy-control/energy-objects/energy-object/power-state.
-             The two leaves together form the complete power state
-             management interface.";
+            "The current operational power state of this component,
+             as reported by the device. This leaf reflects the
+             actual measured state.
+             When oper differs from admin, a transition toward the
+             admin state is in progress.";
         }
       }
 
@@ -2325,13 +2322,13 @@ module ietf-power-and-energy {
               base power-state;
             }
             description
-              "The administratively requested power state for the
-               Energy Object. This is the state that the management
-               system desires the energy object to be in. This leaf is
-               the administrative counterpart of the operational set
-               'oper' in /energy-objects/energy-object/power-state.
-               The two leaves together form the complete power state
-               management interface.";
+              "The administratively requested power state for this
+               component. This leaf represents the operator's
+               intended target state. When admin and oper differ,
+               a transition is in progress.
+               Absence of a configured value indicates no
+               administrative preference; the component operates
+               at its default state.";
           }
         }
       }
